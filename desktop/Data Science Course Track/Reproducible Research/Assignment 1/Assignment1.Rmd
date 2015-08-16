@@ -1,0 +1,85 @@
+Reproducible Research : Assignment 1 
+====================================
+
+```{r firstchunk}
+    setwd('C:/Users/mittroh/Desktop/Data Science Course Track/Reproducible Research/Assignment 1')
+    data = read.csv('activity.csv', stringsAsFactors= FALSE)
+    datacomplete = data[complete.cases(data),]
+    
+    datacomplete$date = factor(datacomplete$date)
+    
+    datacomplete$date = factor(datacomplete$date, label=1:length(levels(datacomplete$date)))
+    
+    data2 = datacomplete
+    stepsData= matrix(nrow=1, ncol=2)
+    steps=0;
+    
+    X<-split(data2, data2$date)
+    
+    sumSteps<- as.matrix(sapply(X[], function(X) sum(X[,1])))
+    meanSteps<- as.matrix(sapply(X[], function(X) mean(X[,1])))
+    medianSteps<- as.matrix(sapply(X[], function(X) median(X[,1])))
+
+
+    hist(sumSteps)
+    hist(meanSteps)
+    hist(medianSteps)
+    
+```
+
+Average Number of steps by the minute over different days:
+
+```{r secondchunk}
+    
+    minsteps= numeric(0)
+    
+    for(i in  1:288){
+        
+        steps = 0
+        for(j in 1:53){
+            steps = steps + X[[j]][i,1]
+        }
+        
+        minsteps = c(minsteps,steps/53)
+            
+    }
+        
+    plot(minsteps, xlab="#5 min interval", ylab= "steps", type="l")
+    print('Which interval has the highest number of steps:')
+    which(minsteps==max(minsteps))
+    
+```
+
+
+Inputing missing values:
+
+
+```{r third chunk}
+    setwd('C:/Users/mittroh/Desktop/Data Science Course Track/Reproducible Research/Assignment 1')
+    data3 = read.csv('activity.csv')
+    print('Number of NA rows:')
+    length(data3[is.na(data3[,1]),1])
+    
+    for (i in 1:length(data3[,1]))  
+    {
+        if(is.na(data3[i,1]))
+           data3[i,1]=minsteps[data3[i,3]/5+1]  ##Replace data with average of 53 days for which data exists
+        
+    }
+    
+    ## data3 is the new dataset
+    
+    Y = split (data3, data3$date)
+    sumSteps2<- as.matrix(sapply(Y[], function(y) sum(y[,1])))
+    meanSteps2<- as.matrix(sapply(Y[], function(y) mean(y[,1])))
+    medianSteps2<- as.matrix(sapply(Y[], function(y) median(y[,1])))
+
+
+    hist(sumSteps2)
+    hist(meanSteps2)
+    hist(medianSteps2)
+    
+    
+```
+
+
